@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Connection Test</title>
+    <style>
+        body {
+            font-family: monospace;
+            background: #000;
+            color: #0f0;
+            padding: 20px;
+        }
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #0f0;
+        }
+        .success { color: #0f0; }
+        .error { color: #f00; }
+        .warning { color: #ff0; }
+        button {
+            background: #0f0;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            font-family: monospace;
+            cursor: pointer;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Supabase Database Connection Test</h1>
+    
+    <div id="results"></div>
+    
+    <button onclick="testConnection()">Test Connection</button>
+    <button onclick="testAddItem()">Test Add Item</button>
+    <button onclick="clearResults()">Clear Results</button>
+
+    <script src="supabase-config.js"></script>
+    <script src="database.js"></script>
+    <script>
+        function log(message, type = 'info') {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+            div.innerHTML = `[${new Date().toLocaleTimeString()}] ${message}`;
+            results.appendChild(div);
+            console.log(message);
+        }
+
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+        }
+
+        async function testConnection() {
+            log('🧪 Starting database connection test...', 'info');
+            
+            // Test 1: Check config
+            log(`🔧 URL: ${SUPABASE_CONFIG.url}`, 'info');
+            log(`🔑 API Key: ${SUPABASE_CONFIG.anonKey ? SUPABASE_CONFIG.anonKey.substring(0, 20) + '...' : 'NOT SET'}`, 'info');
+            
+            if (!SUPABASE_CONFIG.url || SUPABASE_CONFIG.url.includes('YOUR_')) {
+                log('❌ Supabase URL not configured properly!', 'error');
+                return;
+            }
+            
+            if (!SUPABASE_CONFIG.anonKey || SUPABASE_CONFIG.anonKey.includes('YOUR_')) {
+                log('❌ Supabase API key not configured properly!', 'error');
+                return;
+            }
+
+            // Test 2: Try to connect and fetch data
+            try {
+                const db = new WishlistDatabase();
+                const items = await db.getAllItems();
+                log(`✅ Successfully connected! Found ${items.length} items`, 'success');
+                
+                if (items.length > 0) {
+                    log(`📊 Sample item: ${JSON.stringify(items[0], null, 2)}`, 'info');
+                }
+            } catch (error) {
+                log(`❌ Connection failed: ${error.message}`, 'error');
+            }
+        }
+
+        async function testAddItem() {
+            log('🧪 Testing add item functionality...', 'info');
+            
+            try {
+                const db = new WishlistDatabase();
+                const testItem = {
+                    name: 'Test Item ' + Date.now(),
+                    price: 99.99,
+                    category: 'electronics',
+                    reason: 'Testing database connection',
+                    url: 'https://example.com',
+                    imageUrl: null,
+                    crossedOff: false
+                };
+                
+                log(`📤 Adding test item: ${testItem.name}`, 'info');
+                const result = await db.addItem(testItem);
+                log(`✅ Successfully added item with ID: ${result.id}`, 'success');
+                
+                // Try to fetch it back
+                const items = await db.getAllItems();
+                const addedItem = items.find(item => item.id === result.id);
+                if (addedItem) {
+                    log(`✅ Item verified in database: ${addedItem.name}`, 'success');
+                } else {
+                    log(`⚠️ Item added but not found in fetch`, 'warning');
+                }
+                
+            } catch (error) {
+                log(`❌ Add item failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Auto-run connection test on load
+        window.addEventListener('load', () => {
+            setTimeout(testConnection, 500);
+        });
+    </script>
+</body>
+</html>

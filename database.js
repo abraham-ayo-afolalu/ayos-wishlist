@@ -9,24 +9,38 @@ class WishlistDatabase {
             'apikey': this.supabaseKey,
             'Authorization': `Bearer ${this.supabaseKey}`
         };
+        
+        console.log('🔧 Database initialized with URL:', this.supabaseUrl);
+        console.log('🔑 API Key (first 20 chars):', this.supabaseKey ? this.supabaseKey.substring(0, 20) + '...' : 'NOT SET');
     }
 
     // Get all wishlist items
     async getAllItems() {
         try {
-            const response = await fetch(`${this.supabaseUrl}/rest/v1/wishlist_items?select=*&order=created_at.desc`, {
+            const url = `${this.supabaseUrl}/rest/v1/wishlist_items?select=*&order=created_at.desc`;
+            console.log('📡 GET request to:', url);
+            console.log('📋 Request headers:', this.headers);
+            
+            const response = await fetch(url, {
                 headers: this.headers
             });
             
+            console.log('📨 Response status:', response.status);
+            console.log('📨 Response headers:', Object.fromEntries(response.headers.entries()));
+            
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                const errorText = await response.text();
+                console.error('❌ Response error:', errorText);
+                throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
             }
             
             const items = await response.json();
-            console.log('📥 Loaded items from database:', items.length);
+            console.log('✅ Successfully loaded items from database:', items.length);
+            console.log('📊 Items data:', items);
             return items;
         } catch (error) {
             console.error('❌ Error loading items:', error);
+            console.error('❌ Full error details:', error.message, error.stack);
             return [];
         }
     }
@@ -34,29 +48,38 @@ class WishlistDatabase {
     // Add new wishlist item
     async addItem(item) {
         try {
+            const requestBody = {
+                name: item.name,
+                price: item.price,
+                category: item.category,
+                reason: item.reason || null,
+                url: item.url || null,
+                image_url: item.imageUrl || null,
+                crossed_off: item.crossedOff || false
+            };
+            
+            console.log('📤 POST request to add item:', requestBody);
+            
             const response = await fetch(`${this.supabaseUrl}/rest/v1/wishlist_items`, {
                 method: 'POST',
                 headers: this.headers,
-                body: JSON.stringify({
-                    name: item.name,
-                    price: item.price,
-                    category: item.category,
-                    reason: item.reason || null,
-                    url: item.url || null,
-                    image_url: item.imageUrl || null,
-                    crossed_off: item.crossedOff || false
-                })
+                body: JSON.stringify(requestBody)
             });
 
+            console.log('📨 Add item response status:', response.status);
+            
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                const errorText = await response.text();
+                console.error('❌ Add item error:', errorText);
+                throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
             }
 
             const newItem = await response.json();
-            console.log('✅ Item added to database:', newItem);
-            return newItem[0];
+            console.log('✅ Item successfully added to database:', newItem);
+            return newItem[0] || newItem;
         } catch (error) {
             console.error('❌ Error adding item:', error);
+            console.error('❌ Full error details:', error.message, error.stack);
             throw error;
         }
     }
