@@ -36,10 +36,15 @@ class RetroWishlistAdmin {
         if (wishForm) {
             wishForm.addEventListener('submit', (e) => {
                 e.preventDefault();
+                console.log('📝 Form submitted, isAuthenticated:', this.isAuthenticated);
                 if (this.isAuthenticated) {
                     this.addWish();
+                } else {
+                    console.log('❌ Not authenticated, form submission blocked');
                 }
             });
+        } else {
+            console.error('❌ wishlistForm not found!');
         }
 
         if (photoInput) {
@@ -170,7 +175,11 @@ class RetroWishlistAdmin {
     }
 
     addWish() {
-        if (!this.isAuthenticated) return;
+        console.log('🚀 addWish() called, isAuthenticated:', this.isAuthenticated);
+        if (!this.isAuthenticated) {
+            console.log('❌ Not authenticated, exiting addWish');
+            return;
+        }
         
         const form = document.getElementById('wishlistForm');
         const isEditing = form.dataset.editingId;
@@ -180,6 +189,8 @@ class RetroWishlistAdmin {
         const url = document.getElementById('itemUrl').value.trim();
         const category = document.getElementById('itemCategory').value;
         const reason = document.getElementById('itemReason').value.trim();
+        
+        console.log('📊 Form data:', { name, priceInput, url, category, reason, isEditing });
         const photoInput = document.getElementById('itemPhoto');
 
         if (!name) {
@@ -231,20 +242,27 @@ class RetroWishlistAdmin {
     }
 
     finalizeWish(wish, isEditing) {
+        console.log('✨ finalizeWish called with:', wish, 'isEditing:', isEditing);
+        console.log('📋 Current wishlist length before:', this.wishlist.length);
+        
         if (isEditing) {
             const index = this.wishlist.findIndex(item => item.id === wish.id);
             if (index !== -1) {
                 this.wishlist[index] = wish;
+                console.log('✏️ Updated item at index', index);
             }
             this.showAlert('Item updated successfully! ✏️', 'success');
             this.cancelEdit(); // Exit edit mode
         } else {
             this.wishlist.push(wish);
+            console.log('➕ Added new item, wishlist length now:', this.wishlist.length);
             this.showAlert('Item added to your showcase! 🎉', 'success');
             this.clearForm();
         }
         
+        console.log('💾 About to save to storage...');
         this.saveToStorage();
+        console.log('🎨 About to render wishlist...');
         this.renderWishlist();
         this.updateStats();
     }
@@ -492,6 +510,8 @@ class RetroWishlistAdmin {
     saveToStorage() {
         try {
             localStorage.setItem('retro-wishlist-showcase', JSON.stringify(this.wishlist));
+            console.log('💾 Saved wishlist to localStorage:', this.wishlist.length, 'items');
+            console.log('💾 Saved data:', this.wishlist);
         } catch (e) {
             console.error('Could not save to localStorage:', e);
         }
@@ -504,17 +524,9 @@ class RetroWishlistAdmin {
                 this.wishlist = JSON.parse(stored);
                 console.log('Loaded wishlist from storage:', this.wishlist.length, 'items');
             } else {
-                // Add a test item for debugging if wishlist is empty
-                this.wishlist = [{
-                    id: Date.now(),
-                    name: 'Test Item',
-                    price: 99.99,
-                    category: 'electronics',
-                    reason: 'Testing edit and remove functionality',
-                    url: 'https://example.com',
-                    imageUrl: null
-                }];
-                console.log('Added test item for debugging');
+                // Start with empty wishlist
+                this.wishlist = [];
+                console.log('No existing data found, starting with empty wishlist');
             }
         } catch (e) {
             console.error('Could not load wishlist from storage:', e);
