@@ -56,7 +56,8 @@ class WishlistDatabase {
                 reason: item.reason ? String(item.reason) : null,
                 url: item.url ? String(item.url) : null,
                 image_url: item.imageUrl ? String(item.imageUrl) : null,
-                crossed_off: Boolean(item.crossedOff || false)
+                crossed_off: Boolean(item.crossedOff || false),
+                created_at: new Date().toISOString()
             };
             
             // Don't include id in POST requests - let Supabase auto-generate it
