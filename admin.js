@@ -9,6 +9,10 @@ class RetroWishlistAdmin {
     }
 
     async init() {
+        console.log('🚀 Admin init starting...');
+        console.log('🌐 Global wishlistDB available:', typeof wishlistDB !== 'undefined');
+        console.log('🔑 Database URL available:', typeof wishlistDB !== 'undefined' ? wishlistDB.supabaseUrl : 'N/A');
+        
         await this.loadFromStorage();
         await this.checkAuthState();
         this.bindEvents();
@@ -263,13 +267,33 @@ class RetroWishlistAdmin {
                 this.showAlert('Item updated successfully! ✏️', 'success');
                 this.cancelEdit(); // Exit edit mode
             } else {
-                console.log('📤 Calling wishlistDB.addItem with:', wish);
-                const newItem = await wishlistDB.addItem(wish);
-                console.log('📥 Received from database:', newItem);
-                this.wishlist.push(newItem);
-                console.log('➕ Added new item to database, wishlist length now:', this.wishlist.length);
-                this.showAlert('Item added to your showcase! 🎉', 'success');
-                this.clearForm();
+                console.log('📤 About to call wishlistDB.addItem with:', wish);
+                console.log('🌐 Database object:', wishlistDB);
+                console.log('🔑 Database URL:', wishlistDB ? wishlistDB.supabaseUrl : 'DB NOT AVAILABLE');
+                
+                try {
+                    const newItem = await wishlistDB.addItem(wish);
+                    console.log('✅ Database addItem completed successfully');
+                    console.log('📥 Received from database:', newItem);
+                    this.wishlist.push(newItem);
+                    console.log('➕ Added new item to local array, wishlist length now:', this.wishlist.length);
+                    this.showAlert('Item added to your showcase! 🎉', 'success');
+                    this.clearForm();
+                } catch (dbError) {
+                    console.error('❌ Database addItem failed:', dbError);
+                    console.error('❌ DB Error message:', dbError.message);
+                    console.error('❌ DB Error stack:', dbError.stack);
+                    
+                    // Still add to local array for now (this might be what's happening)
+                    console.warn('⚠️ Adding to local array despite DB error');
+                    this.wishlist.push({
+                        id: Date.now(),
+                        ...wish,
+                        created_at: new Date().toISOString()
+                    });
+                    this.showAlert('⚠️ Added locally but failed to save to database!', 'warning');
+                    this.clearForm();
+                }
             }
         } catch (error) {
             console.error('❌ Database operation failed:', error);
