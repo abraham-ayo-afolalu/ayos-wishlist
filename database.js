@@ -50,14 +50,19 @@ class WishlistDatabase {
     async addItem(item) {
         try {
             const requestBody = {
-                name: item.name,
-                price: item.price,
-                category: item.category,
-                reason: item.reason || null,
-                url: item.url || null,
-                image_url: item.imageUrl || null,
-                crossed_off: item.crossedOff || false
+                name: String(item.name || ''),
+                price: Number(item.price || 0),
+                category: String(item.category || 'other'),
+                reason: item.reason ? String(item.reason) : null,
+                url: item.url ? String(item.url) : null,
+                image_url: item.imageUrl ? String(item.imageUrl) : null,
+                crossed_off: Boolean(item.crossedOff || false)
             };
+            
+            // Don't include id in POST requests - let Supabase auto-generate it
+            if (item.id && typeof item.id === 'number') {
+                console.log('⚠️ Excluding ID from POST request (will be auto-generated):', item.id);
+            }
             
             console.log('📤 POST request to add item:', requestBody);
             
