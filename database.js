@@ -75,8 +75,11 @@ class WishlistDatabase {
                 throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
             }
 
-            // Handle empty response (common with Supabase)
+            // Handle response carefully
             const responseText = await response.text();
+            console.log('📨 Raw response text:', JSON.stringify(responseText));
+            console.log('📨 Response text length:', responseText.length);
+            
             let newItem;
             
             if (responseText.trim() === '') {
@@ -88,11 +91,23 @@ class WishlistDatabase {
                     created_at: new Date().toISOString()
                 };
             } else {
-                newItem = JSON.parse(responseText);
-                console.log('✅ Item successfully added to database:', newItem);
+                try {
+                    newItem = JSON.parse(responseText);
+                    console.log('✅ Item successfully added to database:', newItem);
+                } catch (parseError) {
+                    console.error('❌ JSON parse error:', parseError);
+                    console.error('❌ Problematic response text:', responseText);
+                    // Still create a mock response on parse error but successful HTTP status
+                    newItem = {
+                        id: Date.now(),
+                        ...requestBody,
+                        created_at: new Date().toISOString()
+                    };
+                    console.log('✅ Created fallback response due to parse error');
+                }
             }
             
-            return newItem[0] || newItem;
+            return Array.isArray(newItem) ? newItem[0] : newItem;
         } catch (error) {
             console.error('❌ Error adding item:', error);
             console.error('❌ Full error details:', error.message, error.stack);

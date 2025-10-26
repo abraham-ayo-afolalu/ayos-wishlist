@@ -215,8 +215,11 @@ class RetroWishlistAdmin {
             url: url,
             category: category,
             reason: reason,
-            imageUrl: null
+            imageUrl: null,
+            crossedOff: false
         };
+        
+        console.log('📦 Created wish object:', wish);
 
         // If editing, preserve existing image if no new photo uploaded
         if (isEditing) {
@@ -248,6 +251,8 @@ class RetroWishlistAdmin {
         console.log('📋 Current wishlist length before:', this.wishlist.length);
         
         try {
+            console.log('💾 About to save wish to database:', wish);
+            
             if (isEditing) {
                 await wishlistDB.updateItem(wish.id, wish);
                 const index = this.wishlist.findIndex(item => item.id === wish.id);
@@ -258,7 +263,9 @@ class RetroWishlistAdmin {
                 this.showAlert('Item updated successfully! ✏️', 'success');
                 this.cancelEdit(); // Exit edit mode
             } else {
+                console.log('📤 Calling wishlistDB.addItem with:', wish);
                 const newItem = await wishlistDB.addItem(wish);
+                console.log('📥 Received from database:', newItem);
                 this.wishlist.push(newItem);
                 console.log('➕ Added new item to database, wishlist length now:', this.wishlist.length);
                 this.showAlert('Item added to your showcase! 🎉', 'success');
@@ -266,7 +273,8 @@ class RetroWishlistAdmin {
             }
         } catch (error) {
             console.error('❌ Database operation failed:', error);
-            this.showAlert('Failed to save item. Please try again.', 'error');
+            console.error('❌ Error details:', error.message);
+            this.showAlert('Failed to save item. Please try again. Check console for details.', 'error');
             return;
         }
         
