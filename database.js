@@ -66,6 +66,8 @@ class WishlistDatabase {
             }
             
             console.log('📤 POST request to add item:', requestBody);
+            console.log('🌐 Full URL:', `${this.supabaseUrl}/rest/v1/wishlist_items`);
+            console.log('📋 Headers being sent:', this.headers);
             
             const response = await fetch(`${this.supabaseUrl}/rest/v1/wishlist_items`, {
                 method: 'POST',
@@ -74,6 +76,14 @@ class WishlistDatabase {
             });
 
             console.log('📨 Add item response status:', response.status);
+            console.log('📨 Add item response status text:', response.statusText);
+            
+            // Log all response headers
+            const responseHeaders = {};
+            for (let [key, value] of response.headers.entries()) {
+                responseHeaders[key] = value;
+            }
+            console.log('📨 Response headers:', responseHeaders);
             
             if (!response.ok) {
                 const errorText = await response.text();
