@@ -3,14 +3,6 @@
 class RetroWishlistAdmin {
     constructor() {
         this.wishlist = [];
-        this.isAuthenticated = false;
-        // Load password hash from external config file (not in repo)
-        this.adminPasswordHash = typeof ADMIN_CONFIG !== 'undefined' ? ADMIN_CONFIG.passwordHash : null;
-        
-        if (!this.adminPasswordHash) {
-            console.error('❌ Admin password hash not configured! Create admin-config.js');
-        }
-        
         this.init();
     }
 
@@ -20,12 +12,10 @@ class RetroWishlistAdmin {
         console.log('🔑 Database URL available:', typeof wishlistDB !== 'undefined' ? wishlistDB.supabaseUrl : 'N/A');
         
         await this.loadFromStorage();
-        await this.checkAuthState();
+        this.showAdminPanel(); // Show admin panel immediately
         this.bindEvents();
-        if (this.isAuthenticated) {
-            this.renderWishlist();
-            this.updateStats();
-        }
+        this.renderWishlist();
+        this.updateStats();
         
         // Add some 90s flair with random page elements
         this.addRetroEffects();
@@ -34,24 +24,11 @@ class RetroWishlistAdmin {
     bindEvents() {
         const wishForm = document.getElementById('wishlistForm');
         const photoInput = document.getElementById('itemPhoto');
-        const loginForm = document.getElementById('adminLoginForm');
-        
-        if (loginForm) {
-            loginForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                this.handleAuthentication();
-            });
-        }
         
         if (wishForm) {
             wishForm.addEventListener('submit', (e) => {
                 e.preventDefault();
-                console.log('📝 Form submitted, isAuthenticated:', this.isAuthenticated);
-                if (this.isAuthenticated) {
-                    this.addWish();
-                } else {
-                    console.log('❌ Not authenticated, form submission blocked');
-                }
+                this.addWish();
             });
         } else {
             console.error('❌ wishlistForm not found!');
@@ -65,70 +42,16 @@ class RetroWishlistAdmin {
 
         // Admin keyboard shortcuts
         document.addEventListener('keydown', (e) => {
-            if (this.isAuthenticated && e.ctrlKey && e.key === 'Enter') {
+            if (e.ctrlKey && e.key === 'Enter') {
                 this.addWish();
             }
-            if (this.isAuthenticated && e.ctrlKey && e.key === 'e') {
+            if (e.ctrlKey && e.key === 'e') {
                 e.preventDefault();
                 this.exportWishlist();
             }
         });
         
         // Direct event listeners are added in renderWishlist method
-    }
-    
-    async handleAuthentication() {
-        const passcode = document.getElementById('adminPasscode').value;
-        const hashedInput = await this.hashPassword(passcode);
-        
-        if (hashedInput === this.adminPasswordHash) {
-            this.isAuthenticated = true;
-            this.saveAuthState();
-            this.showAdminPanel();
-            await this.loadFromStorage(); // Reload fresh data from database
-            this.renderWishlist();
-            this.updateStats();
-            this.showAlert('Welcome back, Ayo! 😎', 'success');
-        } else {
-            this.showAlert('Invalid passcode! Access denied! 🚫', 'error');
-            document.getElementById('adminPasscode').value = '';
-        }
-    }
-    
-    async hashPassword(password) {
-        // Use Web Crypto API to hash password with SHA-256
-        const encoder = new TextEncoder();
-        const data = encoder.encode(password);
-        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        return hashHex;
-    }
-    
-    async checkAuthState() {
-        try {
-            const stored = localStorage.getItem('ayo-admin-auth');
-            if (stored) {
-                this.isAuthenticated = JSON.parse(stored);
-                if (this.isAuthenticated) {
-                    this.showAdminPanel();
-                    await this.loadFromStorage(); // Reload data when restoring session
-                    this.renderWishlist();
-                    this.updateStats();
-                    console.log('Restored admin session, wishlist rendered');
-                }
-            }
-        } catch (e) {
-            this.isAuthenticated = false;
-        }
-    }
-    
-    saveAuthState() {
-        try {
-            localStorage.setItem('ayo-admin-auth', JSON.stringify(this.isAuthenticated));
-        } catch (e) {
-            console.error('Could not save auth state:', e);
-        }
     }
     
     showAdminPanel() {
@@ -140,36 +63,6 @@ class RetroWishlistAdmin {
         console.log('Admin panel shown, rendering wishlist...');
     }
     
-    logout() {
-        const confirmed = confirm('Are you sure you want to logout? 🚪\n\nYou will need to re-enter your passcode to access the admin panel again.');
-        
-        if (confirmed) {
-            // Clear authentication state
-            this.isAuthenticated = false;
-            localStorage.removeItem('ayo-admin-auth');
-            
-            // Hide admin panel and controls
-            document.getElementById('adminPanel').style.display = 'none';
-            document.getElementById('adminControls').style.display = 'none';
-            document.getElementById('mainContent').style.display = 'none';
-            
-            // Show login form
-            document.getElementById('adminLogin').style.display = 'block';
-            
-            // Clear any form data for security
-            this.clearForm();
-            
-            // Clear password field
-            document.getElementById('adminPasscode').value = '';
-            
-            this.showAlert('Logged out successfully! 👋', 'info');
-            
-            // Focus on password field for easy re-login
-            setTimeout(() => {
-                document.getElementById('adminPasscode').focus();
-            }, 100);
-        }
-    }
 
     handlePhotoUpload(event) {
         const file = event.target.files[0];
@@ -187,11 +80,7 @@ class RetroWishlistAdmin {
     }
 
     addWish() {
-        console.log('🚀 addWish() called, isAuthenticated:', this.isAuthenticated);
-        if (!this.isAuthenticated) {
-            console.log('❌ Not authenticated, exiting addWish');
-            return;
-        }
+        console.log('🚀 addWish() called');
         
         const form = document.getElementById('wishlistForm');
         const isEditing = form.dataset.editingId;
