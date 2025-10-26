@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✨ Ayo's Wishlist ✨</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="title">
+                <span class="star">🌟</span>
+                <span class="main-text">AYO'S WISHLIST</span>
+                <span class="star">🌟</span>
+            </h1>
+            <div class="reminder-text">💡 Got me something? Click "GOT IT!" to cross it off the list!</div>
+        </header>
+
+        <!-- Hidden Admin Access (Press Ctrl+Shift+A three times to activate) -->
+
+        <div class="main-content">
+            <div class="matrix-background"></div>
+            
+            <div class="wishlist-section">
+                <div class="wishlist-header">
+                    <h2 class="section-title">some things that i'd love to own </h2>
+                    <div class="stats">
+                        <span id="itemCount">0 items in my wishlist</span>
+                    </div>
+                    
+                    <div class="controls">
+                        <div class="filter-controls">
+                            <label for="categoryFilter">Filter by category:</label>
+                            <select id="categoryFilter">
+                                <option value="all">All Categories</option>
+                                <option value="electronics">Electronics</option>
+                                <option value="books">Books</option>
+                                <option value="clothes">Clothes</option>
+                                <option value="music">Music</option>
+                                <option value="experiences">Experiences</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="sort-controls">
+                            <label for="priceSort">Sort by price:</label>
+                            <select id="priceSort">
+                                <option value="none">No Sorting</option>
+                                <option value="low-high">Price: Low to High</option>
+                                <option value="high-low">Price: High to Low</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div id="wishlistItems" class="wishlist-items">
+                    <div class="empty-state">
+                        <p>The wishlist is currently empty! 🌈</p>
+                        <p>Check back soon for awesome items!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <div class="marquee">
+                <div class="marquee-content">
+                    ★ //note to ayo, insert message thanking users for stopping by the site, don't forget!★
+                </div>
+            </div>
+            <p class="copyright">© 2025 My Totally Rad Wishlist | Best viewed in Netscape Navigator</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

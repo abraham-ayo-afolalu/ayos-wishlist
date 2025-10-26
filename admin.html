@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✨ Admin Panel - Wishlist Management ✨</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="title">🔐 AYO'S ADMIN PANEL 🔐</h1>
+            <div class="subtitle">Manage your radical wishlist items!</div>
+            <div class="admin-controls" id="adminControls" style="display: none;">
+                <button class="logout-btn" onclick="wishlistAdmin.logout()">LOGOUT 🚪</button>
+                <a href="index.html" class="view-btn">VIEW PUBLIC SITE 👁️</a>
+            </div>
+        </header>
+
+        <!-- Admin Login -->
+        <div id="adminLogin" class="admin-login" style="display: block;">
+            <h2 class="section-title">🔐 Admin Authentication Required</h2>
+            <form id="adminLoginForm" class="login-form">
+                <div class="form-group">
+                    <label for="adminPasscode">Enter Admin Passcode:</label>
+                    <input type="password" id="adminPasscode" placeholder="Super secret passcode..." required>
+                </div>
+                <button type="submit" class="login-btn">AUTHENTICATE</button>
+            </form>
+            <p class="security-note">⚠️ Unauthorized access is prohibited</p>
+        </div>
+
+        <!-- Admin Panel -->
+        <div id="adminPanel" class="admin-panel" style="display: none;">
+            <h2 class="section-title">✨ Add New Item ✨</h2>
+            <form id="wishlistForm" class="wish-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="itemName">Item Name:</label>
+                        <input type="text" id="itemName" name="itemName" placeholder="What do you want?" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="itemPrice">Price:</label>
+                        <input type="text" id="itemPrice" name="itemPrice" placeholder="£0.00">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="itemUrl">Product Link:</label>
+                    <input type="url" id="itemUrl" name="itemUrl" placeholder="https://example.com/product">
+                </div>
+
+                <div class="form-group">
+                    <label for="itemPhoto">Item Photo:</label>
+                    <input type="file" id="itemPhoto" name="itemPhoto" accept="image/*">
+                    <div class="photo-preview" id="photoPreview" style="display: none;">
+                        <img id="previewImage" alt="Preview" style="max-width: 200px; max-height: 200px;">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="itemCategory">Category:</label>
+                    <select id="itemCategory" name="itemCategory">
+                        <option value="electronics">Electronics</option>
+                        <option value="books">Books</option>
+                        <option value="clothes">Clothes</option>
+                        <option value="music">Music</option>
+                        <option value="experiences">Experiences</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="itemReason">Why I want this:</label>
+                    <textarea id="itemReason" name="itemReason" placeholder="Explain why you want this item..." rows="3"></textarea>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="add-btn">ADD TO WISHLIST!</button>
+                    <a href="index.html" class="view-btn">VIEW PUBLIC SITE</a>
+                </div>
+            </form>
+        </div>
+
+        <div class="main-content" id="mainContent" style="display: none;">
+            <div class="wishlist-section">
+                <div class="wishlist-header">
+                    <h2 class="section-title">Current Wishlist Items</h2>
+                    <div class="stats">
+                        <span id="itemCount">0 items</span> | 
+                        <span id="totalValue">Total Value: £0.00</span>
+                    </div>
+                </div>
+                <div id="wishlistItems" class="wishlist-items">
+                    <div class="empty-state">
+                        <p>No items in your wishlist yet! 🌈</p>
+                        <p>Add some above to get started!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <div class="marquee">
+                <div class="marquee-content">
+                    ★ Admin Panel ★ if you're not Ayo please logout and shut down any device you are using to access this site ★
+                </div>
+            </div>
+            <p class="copyright">© 2025 Admin Panel | Best viewed in Netscape Navigator</p>
+        </footer>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>

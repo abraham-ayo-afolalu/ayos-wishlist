@@ -1,0 +1,24 @@
+{
+  "name": "ayos-90s-wishlist",
+  "version": "1.0.0",
+  "description": "A totally radical 90s-style wishlist showcase with admin panel",
+  "main": "index.html",
+  "scripts": {
+    "start": "python3 -m http.server 8000",
+    "dev": "python3 -m http.server 8000"
+  },
+  "keywords": [
+    "wishlist",
+    "90s",
+    "retro",
+    "showcase",
+    "vanilla-js"
+  ],
+  "author": "Ayo",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/ayos-90s-wishlist.git"
+  },
+  "homepage": "https://yourusername.github.io/ayos-90s-wishlist"
+}
