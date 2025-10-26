@@ -18,7 +18,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/ayos-90s-wishlist.git"
+    "url": "https://github.com/abraham-ayo-afolalu/ayos-wishlist.git"
   },
-  "homepage": "https://yourusername.github.io/ayos-90s-wishlist"
+  "homepage": "https://ayos-wishlist.vercel.app"
 }
