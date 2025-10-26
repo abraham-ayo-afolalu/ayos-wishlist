@@ -33,9 +33,6 @@ build/
 # Vercel
 .vercel
 
-# Supabase Configuration - Keep your credentials secure
-supabase-config.js
-
 # Admin Configuration - Keep your password hash secure
 admin-config.js
 
