@@ -519,17 +519,26 @@ class RetroWishlistAdmin {
 
     loadFromStorage() {
         try {
+            // Test localStorage functionality
+            localStorage.setItem('test', 'working');
+            const testValue = localStorage.getItem('test');
+            localStorage.removeItem('test');
+            console.log('🧪 localStorage test:', testValue === 'working' ? 'WORKING' : 'FAILED');
+            
             const stored = localStorage.getItem('retro-wishlist-showcase');
+            console.log('📦 Raw stored data:', stored);
+            
             if (stored) {
                 this.wishlist = JSON.parse(stored);
-                console.log('Loaded wishlist from storage:', this.wishlist.length, 'items');
+                console.log('📥 Loaded wishlist from storage:', this.wishlist.length, 'items');
+                console.log('📊 Loaded data:', this.wishlist);
             } else {
                 // Start with empty wishlist
                 this.wishlist = [];
-                console.log('No existing data found, starting with empty wishlist');
+                console.log('🆕 No existing data found, starting with empty wishlist');
             }
         } catch (e) {
-            console.error('Could not load wishlist from storage:', e);
+            console.error('❌ Could not load wishlist from storage:', e);
             this.wishlist = [];
         }
     }

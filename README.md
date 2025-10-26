@@ -1,6 +1,6 @@
 # 🌟 Ayo's 90s Retro Wishlist Showcase 🌟
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/yourusername/ayos-90s-wishlist)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/abraham-ayo-afolalu/ayos-wishlist)
 
 Welcome to the most totally awesome wishlist showcase website ever created! This site brings back all the radical vibes of the 1990s web with modern functionality. Perfect for sharing your dream items with friends and family!
 
