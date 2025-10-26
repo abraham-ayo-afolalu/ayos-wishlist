@@ -7,7 +7,8 @@ class WishlistDatabase {
         this.headers = {
             'Content-Type': 'application/json',
             'apikey': this.supabaseKey,
-            'Authorization': `Bearer ${this.supabaseKey}`
+            'Authorization': `Bearer ${this.supabaseKey}`,
+            'Prefer': 'return=representation'
         };
         
         console.log('🔧 Database initialized with URL:', this.supabaseUrl);
@@ -74,8 +75,23 @@ class WishlistDatabase {
                 throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
             }
 
-            const newItem = await response.json();
-            console.log('✅ Item successfully added to database:', newItem);
+            // Handle empty response (common with Supabase)
+            const responseText = await response.text();
+            let newItem;
+            
+            if (responseText.trim() === '') {
+                console.log('✅ Item added (empty response), creating mock response');
+                // Create a mock response since Supabase sometimes returns empty on success
+                newItem = {
+                    id: Date.now(), // Temporary ID
+                    ...requestBody,
+                    created_at: new Date().toISOString()
+                };
+            } else {
+                newItem = JSON.parse(responseText);
+                console.log('✅ Item successfully added to database:', newItem);
+            }
+            
             return newItem[0] || newItem;
         } catch (error) {
             console.error('❌ Error adding item:', error);
