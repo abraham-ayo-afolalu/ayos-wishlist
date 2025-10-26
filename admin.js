@@ -4,7 +4,13 @@ class RetroWishlistAdmin {
     constructor() {
         this.wishlist = [];
         this.isAuthenticated = false;
-        this.adminPasswordHash = '9992126f56a77d9ca803ba422a7d84e917a02beadcce9e42d1549c6ef70ccae0';
+        // Load password hash from external config file (not in repo)
+        this.adminPasswordHash = typeof ADMIN_CONFIG !== 'undefined' ? ADMIN_CONFIG.passwordHash : null;
+        
+        if (!this.adminPasswordHash) {
+            console.error('❌ Admin password hash not configured! Create admin-config.js');
+        }
+        
         this.init();
     }
 

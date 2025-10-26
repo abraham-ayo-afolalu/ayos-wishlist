@@ -33,8 +33,11 @@ build/
 # Vercel
 .vercel
 
-# Security - Remove after generating your hash
-generate-password-hash.html
-
 # Supabase Configuration - Keep your credentials secure
 supabase-config.js
+
+# Admin Configuration - Keep your password hash secure
+admin-config.js
+
+# Local utilities - Not needed in production
+generate-hash.html

@@ -83,16 +83,16 @@ Welcome to the most totally awesome wishlist showcase website ever created! This
 ## 🔐 Security & Configuration
 
 ### Admin Access
-- **Secure password hashing**: Uses SHA-256 hashing instead of plain text
-- **Generate your hash**: Use `generate-password-hash.html` to create your secure hash
-- **Delete generator**: Remove the hash generator file after use for security
-- **Update hash**: Replace the hash in `admin.js` line 9
-- Sessions are remembered in localStorage
-- Admin panel is completely hidden from public view
+- **Secure password hashing**: Uses SHA-256 hashing for authentication
+- **Environment-based**: Password configured via environment variables (not in code)
+- **Sessions**: Admin sessions are remembered in localStorage
+- **Hidden panel**: Admin panel is completely separate from public view
+
+### Database Setup
+See `DATABASE-SETUP.md` for Supabase configuration instructions.
 
 ### Customization
 - Update personal name in `index.html` and `admin.html`
-- Change passcode in `admin.js`
 - Modify currency symbols in CSS if needed
 - Add/remove categories as desired
 
