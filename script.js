@@ -112,7 +112,7 @@ class RetroWishlistShowcase {
                 clothes: '👕',
                 music: '🎵',
                 experiences: '🎢',
-                other: '🎁'
+                other: '🪄'
             };
             
             const itemUrl = item.url || '#';

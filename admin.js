@@ -233,20 +233,28 @@ class RetroWishlistAdmin {
             }
         }
 
+        console.log('🖼️ Checking for photo upload...');
+        
         // Handle photo if uploaded
         if (photoInput.files && photoInput.files[0]) {
+            console.log('📸 Photo found, processing...');
             const reader = new FileReader();
             reader.onload = (e) => {
                 wish.imageUrl = e.target.result;
+                console.log('📸 Photo processed, calling finalizeWish...');
                 this.finalizeWish(wish, isEditing);
             };
             reader.readAsDataURL(photoInput.files[0]);
         } else {
+            console.log('📝 No photo uploaded, proceeding with text-only item...');
             // No photo uploaded, try to get link preview
             if (url && !isEditing) {
+                console.log('🔗 Attempting to fetch link preview...');
                 this.fetchLinkPreview(wish);
+            } else {
+                console.log('💾 No link preview needed, calling finalizeWish directly...');
+                this.finalizeWish(wish, isEditing);
             }
-            this.finalizeWish(wish, isEditing);
         }
     }
 
@@ -433,7 +441,7 @@ class RetroWishlistAdmin {
                 clothes: '👕',
                 music: '🎵',
                 experiences: '🎢',
-                other: '🎁'
+                other: '🪄'
             };
 
             return `
@@ -527,6 +535,8 @@ class RetroWishlistAdmin {
 
     // Link preview functionality
     async fetchLinkPreview(wish) {
+        console.log('🔗 fetchLinkPreview called for URL:', wish.url);
+        
         // Simple fallback - try to extract domain for basic preview
         try {
             const url = new URL(wish.url);
@@ -547,6 +557,10 @@ class RetroWishlistAdmin {
         } catch (e) {
             console.log('Could not parse URL for preview');
         }
+        
+        // CRITICAL: Call finalizeWish after setting preview - this was missing!
+        console.log('🔗 Link preview completed, now calling finalizeWish...');
+        this.finalizeWish(wish, false);
     }
     
     setFallbackImage(wish, emoji) {
