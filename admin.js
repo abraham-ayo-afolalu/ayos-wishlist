@@ -241,27 +241,33 @@ class RetroWishlistAdmin {
         }
     }
 
-    finalizeWish(wish, isEditing) {
+    async finalizeWish(wish, isEditing) {
         console.log('✨ finalizeWish called with:', wish, 'isEditing:', isEditing);
         console.log('📋 Current wishlist length before:', this.wishlist.length);
         
-        if (isEditing) {
-            const index = this.wishlist.findIndex(item => item.id === wish.id);
-            if (index !== -1) {
-                this.wishlist[index] = wish;
-                console.log('✏️ Updated item at index', index);
+        try {
+            if (isEditing) {
+                await wishlistDB.updateItem(wish.id, wish);
+                const index = this.wishlist.findIndex(item => item.id === wish.id);
+                if (index !== -1) {
+                    this.wishlist[index] = wish;
+                    console.log('✏️ Updated item in database and local array');
+                }
+                this.showAlert('Item updated successfully! ✏️', 'success');
+                this.cancelEdit(); // Exit edit mode
+            } else {
+                const newItem = await wishlistDB.addItem(wish);
+                this.wishlist.push(newItem);
+                console.log('➕ Added new item to database, wishlist length now:', this.wishlist.length);
+                this.showAlert('Item added to your showcase! 🎉', 'success');
+                this.clearForm();
             }
-            this.showAlert('Item updated successfully! ✏️', 'success');
-            this.cancelEdit(); // Exit edit mode
-        } else {
-            this.wishlist.push(wish);
-            console.log('➕ Added new item, wishlist length now:', this.wishlist.length);
-            this.showAlert('Item added to your showcase! 🎉', 'success');
-            this.clearForm();
+        } catch (error) {
+            console.error('❌ Database operation failed:', error);
+            this.showAlert('Failed to save item. Please try again.', 'error');
+            return;
         }
         
-        console.log('💾 About to save to storage...');
-        this.saveToStorage();
         console.log('🎨 About to render wishlist...');
         this.renderWishlist();
         this.updateStats();
@@ -343,7 +349,7 @@ class RetroWishlistAdmin {
         this.showAlert('Edit cancelled! 🚫', 'info');
     }
 
-    removeWish(id) {
+    async removeWish(id) {
         console.log('removeWish called with id:', id);
         const item = this.wishlist.find(wish => wish.id === id);
         const itemName = item ? item.name : 'this item';
@@ -353,11 +359,17 @@ class RetroWishlistAdmin {
         const confirmed = confirm(`Are you sure you want to remove "${itemName}" from your wishlist?`);
         
         if (confirmed) {
-            this.wishlist = this.wishlist.filter(item => item.id !== id);
-            this.saveToStorage();
-            this.renderWishlist();
-            this.updateStats();
-            this.showAlert('Item removed from wishlist! 💔', 'info');
+            try {
+                await wishlistDB.deleteItem(id);
+                this.wishlist = this.wishlist.filter(item => item.id !== id);
+                this.renderWishlist();
+                this.updateStats();
+                this.showAlert('Item removed from wishlist! 💔', 'info');
+                console.log('✅ Item successfully removed from database');
+            } catch (error) {
+                console.error('❌ Failed to remove item from database:', error);
+                this.showAlert('Failed to remove item. Please try again.', 'error');
+            }
         }
     }
 
@@ -507,39 +519,20 @@ class RetroWishlistAdmin {
         wish.fallbackEmoji = emoji;
     }
 
-    saveToStorage() {
-        try {
-            localStorage.setItem('retro-wishlist-showcase', JSON.stringify(this.wishlist));
-            console.log('💾 Saved wishlist to localStorage:', this.wishlist.length, 'items');
-            console.log('💾 Saved data:', this.wishlist);
-        } catch (e) {
-            console.error('Could not save to localStorage:', e);
-        }
+    async saveToStorage() {
+        // This method is kept for compatibility but now just logs
+        console.log('💾 saveToStorage called - using database instead of localStorage');
     }
 
-    loadFromStorage() {
+    async loadFromStorage() {
         try {
-            // Test localStorage functionality
-            localStorage.setItem('test', 'working');
-            const testValue = localStorage.getItem('test');
-            localStorage.removeItem('test');
-            console.log('🧪 localStorage test:', testValue === 'working' ? 'WORKING' : 'FAILED');
-            
-            const stored = localStorage.getItem('retro-wishlist-showcase');
-            console.log('📦 Raw stored data:', stored);
-            
-            if (stored) {
-                this.wishlist = JSON.parse(stored);
-                console.log('📥 Loaded wishlist from storage:', this.wishlist.length, 'items');
-                console.log('📊 Loaded data:', this.wishlist);
-            } else {
-                // Start with empty wishlist
-                this.wishlist = [];
-                console.log('🆕 No existing data found, starting with empty wishlist');
-            }
+            console.log('📥 Loading wishlist from database...');
+            this.wishlist = await wishlistDB.getAllItems();
+            console.log('✅ Loaded from database:', this.wishlist.length, 'items');
         } catch (e) {
-            console.error('❌ Could not load wishlist from storage:', e);
+            console.error('❌ Could not load wishlist from database:', e);
             this.wishlist = [];
+            this.showAlert('Unable to load wishlist from database. Please check your connection.', 'error');
         }
     }
 

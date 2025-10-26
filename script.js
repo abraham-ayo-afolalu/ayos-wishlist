@@ -65,15 +65,21 @@ class RetroWishlistShowcase {
         }
     }
     
-    toggleCrossOff(itemId, event) {
+    async toggleCrossOff(itemId, event) {
         event.preventDefault();
         event.stopPropagation();
         
         const item = this.wishlist.find(item => item.id === itemId);
         if (item) {
-            item.crossedOff = !item.crossedOff;
-            this.saveToStorage();
-            this.renderWishlist();
+            try {
+                const newStatus = !item.crossed_off;
+                await wishlistDB.toggleCrossedOff(itemId, newStatus);
+                item.crossed_off = newStatus;
+                this.renderWishlist();
+                console.log('✅ Item status updated in database');
+            } catch (error) {
+                console.error('❌ Failed to update item status:', error);
+            }
         }
     }
 
@@ -110,7 +116,7 @@ class RetroWishlistShowcase {
             };
             
             const itemUrl = item.url || '#';
-            const crossedClass = item.crossedOff ? 'crossed-off' : '';
+            const crossedClass = (item.crossedOff || item.crossed_off) ? 'crossed-off' : '';
 
             return `
                 <a href="${itemUrl}" target="_blank" class="wish-item ${crossedClass}" data-id="${item.id}">
@@ -129,9 +135,8 @@ class RetroWishlistShowcase {
                     </div>
                     
                     <div class="wish-item-actions">
-                        <button class="cross-off-btn ${item.crossedOff ? 'crossed' : ''}" 
-                                onclick="wishlistApp.toggleCrossOff(${item.id}, event)">
-                            ${item.crossedOff ? 'UNDO' : 'GOT IT!'}
+                        <button class="cross-off-btn" onclick="wishlistApp.toggleCrossOff(${item.id}, event)">
+                            ${(item.crossedOff || item.crossed_off) ? 'UNDO' : 'GOT IT!'}
                         </button>
                     </div>
                 </a>
@@ -196,14 +201,13 @@ class RetroWishlistShowcase {
         }
     }
 
-    loadFromStorage() {
+    async loadFromStorage() {
         try {
-            const stored = localStorage.getItem('retro-wishlist-showcase');
-            if (stored) {
-                this.wishlist = JSON.parse(stored);
-            }
+            console.log('📥 Loading wishlist from database...');
+            this.wishlist = await wishlistDB.getAllItems();
+            console.log('✅ Public site loaded from database:', this.wishlist.length, 'items');
         } catch (e) {
-            console.error('Could not load from localStorage:', e);
+            console.error('❌ Could not load from database:', e);
             this.wishlist = [];
         }
     }
