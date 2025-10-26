@@ -11,27 +11,16 @@
         <header class="header">
             <h1 class="title">🔐 AYO'S ADMIN PANEL 🔐</h1>
             <div class="subtitle">Manage your radical wishlist items!</div>
-            <div class="admin-controls" id="adminControls" style="display: none;">
-                <button class="logout-btn" onclick="wishlistAdmin.logout()">LOGOUT 🚪</button>
+            <div class="admin-controls" id="adminControls" style="display: flex;">
                 <a href="index.html" class="view-btn">VIEW PUBLIC SITE 👁️</a>
             </div>
         </header>
 
-        <!-- Admin Login -->
-        <div id="adminLogin" class="admin-login" style="display: block;">
-            <h2 class="section-title">🔐 Admin Authentication Required</h2>
-            <form id="adminLoginForm" class="login-form">
-                <div class="form-group">
-                    <label for="adminPasscode">Enter Admin Passcode:</label>
-                    <input type="password" id="adminPasscode" placeholder="Super secret passcode..." required>
-                </div>
-                <button type="submit" class="login-btn">AUTHENTICATE</button>
-            </form>
-            <p class="security-note">⚠️ Unauthorized access is prohibited</p>
-        </div>
+        <!-- Hidden login element (for compatibility with JS) -->
+        <div id="adminLogin" style="display: none;"></div>
 
         <!-- Admin Panel -->
-        <div id="adminPanel" class="admin-panel" style="display: none;">
+        <div id="adminPanel" class="admin-panel" style="display: block;">
             <h2 class="section-title">✨ Add New Item ✨</h2>
             <form id="wishlistForm" class="wish-form">
                 <div class="form-row">
@@ -82,7 +71,7 @@
             </form>
         </div>
 
-        <div class="main-content" id="mainContent" style="display: none;">
+        <div class="main-content" id="mainContent" style="display: block;">
             <div class="wishlist-section">
                 <div class="wishlist-header">
                     <h2 class="section-title">Current Wishlist Items</h2>
@@ -103,7 +92,7 @@
         <footer class="footer">
             <div class="marquee">
                 <div class="marquee-content">
-                    ★ if you're seeing this logout and shut down your computer. You have been hacked. ★ 
+                    ★ if you're seeing this shut down your computer. You have been hacked. ★ 
                 </div>
             </div>
             <p class="copyright">© 2025 Admin Panel | Best viewed in Netscape Navigator</p>
