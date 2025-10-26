@@ -8,9 +8,9 @@ class RetroWishlistAdmin {
         this.init();
     }
 
-    init() {
-        this.loadFromStorage();
-        this.checkAuthState();
+    async init() {
+        await this.loadFromStorage();
+        await this.checkAuthState();
         this.bindEvents();
         if (this.isAuthenticated) {
             this.renderWishlist();
@@ -75,6 +75,7 @@ class RetroWishlistAdmin {
             this.isAuthenticated = true;
             this.saveAuthState();
             this.showAdminPanel();
+            await this.loadFromStorage(); // Reload fresh data from database
             this.renderWishlist();
             this.updateStats();
             this.showAlert('Welcome back, Ayo! 😎', 'success');
@@ -94,13 +95,14 @@ class RetroWishlistAdmin {
         return hashHex;
     }
     
-    checkAuthState() {
+    async checkAuthState() {
         try {
             const stored = localStorage.getItem('ayo-admin-auth');
             if (stored) {
                 this.isAuthenticated = JSON.parse(stored);
                 if (this.isAuthenticated) {
                     this.showAdminPanel();
+                    await this.loadFromStorage(); // Reload data when restoring session
                     this.renderWishlist();
                     this.updateStats();
                     console.log('Restored admin session, wishlist rendered');
@@ -405,8 +407,8 @@ class RetroWishlistAdmin {
             return `
                 <div class="wish-item" data-id="${item.id}">
                     <div class="wish-item-preview">
-                        ${item.imageUrl ? 
-                            `<img src="${item.imageUrl}" alt="${item.name}" loading="lazy">` : 
+                        ${(item.imageUrl || item.image_url) ? 
+                            `<img src="${item.imageUrl || item.image_url}" alt="${item.name}" loading="lazy">` : 
                             `<div class="placeholder">${categoryPlaceholders[item.category]}</div>`
                         }
                     </div>

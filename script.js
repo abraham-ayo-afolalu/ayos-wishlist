@@ -9,8 +9,8 @@ class RetroWishlistShowcase {
         this.init();
     }
 
-    init() {
-        this.loadFromStorage();
+    async init() {
+        await this.loadFromStorage();
         this.bindEvents();
         this.applyFiltersAndSort();
         this.renderWishlist();
@@ -121,8 +121,8 @@ class RetroWishlistShowcase {
             return `
                 <a href="${itemUrl}" target="_blank" class="wish-item ${crossedClass}" data-id="${item.id}">
                     <div class="wish-item-preview">
-                        ${item.imageUrl ? 
-                            `<img src="${item.imageUrl}" alt="${item.name}" loading="lazy">` : 
+                        ${(item.imageUrl || item.image_url) ? 
+                            `<img src="${item.imageUrl || item.image_url}" alt="${item.name}" loading="lazy">` : 
                             `<div class="placeholder">${categoryPlaceholders[item.category]}</div>`
                         }
                     </div>
